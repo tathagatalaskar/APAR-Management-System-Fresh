@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: apar
+      POSTGRES_USER: apar
+      POSTGRES_PASSWORD: local_demo_only_change_me
+    volumes:
+      - apar_data:/var/lib/postgresql/data
+      - ./db/init/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./db/init/02_reference_data.sql:/docker-entrypoint-initdb.d/02_reference_data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apar -d apar"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  api:
+    build: ./backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/apar
+      SPRING_DATASOURCE_USERNAME: apar
+      SPRING_DATASOURCE_PASSWORD: local_demo_only_change_me
+      APP_JWT_SECRET: local-only-demo-secret-change-before-deploy-12345678901234567890
+      APP_CORS_ORIGINS: http://localhost:5173,http://localhost:8080
+      APAR_LOAD_DEMO_SEED: "true"
+      APAR_REMINDERS_ENABLED: "false"
+      APP_BOOTSTRAP_ENABLED: "true"
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+  web:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "5173:80"
+    depends_on:
+      api:
+        condition: service_healthy
+volumes:
+  apar_data:
