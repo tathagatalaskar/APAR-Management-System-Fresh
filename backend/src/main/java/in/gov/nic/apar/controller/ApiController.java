@@ -18,14 +18,14 @@ import in.gov.nic.apar.service.AparService; import in.gov.nic.apar.security.JwtS
  @PreAuthorize("hasRole('AUTHORITY')") @GetMapping("/v1/cycles/active") public Map<String,Object> cycle(){return svc.cycle();}
  @PreAuthorize("hasRole('AUTHORITY')") @PutMapping("/v1/cycles/active") public ResponseEntity<?> setCycle(@RequestBody Map<String,Object>b){svc.setCycle(b);return ResponseEntity.noContent().build();}
  @PreAuthorize("hasRole('AUTHORITY')") @PostMapping("/v1/acr/reminders") public ResponseEntity<?> request(@RequestBody Map<String,Object>b){List<Long> ids=((List<?>)b.getOrDefault("employeeIds",List.of())).stream().map(x->((Number)x).longValue()).toList();svc.requestApar(ids,String.valueOf(b.getOrDefault("message","Please submit your APAR.")));return ResponseEntity.noContent().build();}
- @GetMapping("/v1/acr/eligibility") public Map<String,Object> eligibility(){return svc.eligibility();}
+ @PreAuthorize("hasRole('EMPLOYEE')") @GetMapping("/v1/acr/eligibility") public Map<String,Object> eligibility(){return svc.eligibility();}
  @GetMapping("/v1/acr") public List<Map<String,Object>> acrs(){return svc.acrList();}
- @PostMapping("/v1/acr/submit") public ResponseEntity<?> submit(@RequestBody Map<String,Object>b){Long employeeId=((Number)db.queryForObject("select e.id from tran.employee_details e where lower(e.email)=lower(?)",Long.class,org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName())).longValue();svc.submit(employeeId,(List<Map<String,Object>>)b.getOrDefault("entries",List.of()));return ResponseEntity.noContent().build();}
+ @PreAuthorize("hasRole('EMPLOYEE')") @PostMapping("/v1/acr/submit") public ResponseEntity<?> submit(@RequestBody Map<String,Object>b){Long employeeId=((Number)db.queryForObject("select e.id from tran.employee_details e where lower(e.email)=lower(?)",Long.class,org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName())).longValue();svc.submit(employeeId,(List<Map<String,Object>>)b.getOrDefault("entries",List.of()));return ResponseEntity.noContent().build();}
  @GetMapping("/v1/acr/{id}") public Map<String,Object> acr(@PathVariable long id){return svc.acr(id);}
  @PreAuthorize("hasRole('AUTHORITY')") @PutMapping("/v1/acr/{id}/review") public ResponseEntity<?> review(@PathVariable long id,@RequestBody Map<String,Object>b){svc.review(id,b);return ResponseEntity.noContent().build();}
  @PreAuthorize("hasRole('AUTHORITY')") @PutMapping("/v1/acr/{id}/request-resubmission") public ResponseEntity<?> resubmit(@PathVariable long id,@RequestBody Map<String,String>b){svc.returnForRevision(id,b.getOrDefault("reason",""));return ResponseEntity.noContent().build();}
  @GetMapping("/v1/acr/{id}/history") public List<Map<String,Object>> history(@PathVariable long id){return svc.history(id);}
- @GetMapping("/v1/acr/{id}/audit") public List<Map<String,Object>> audit(@PathVariable long id){return svc.audit(id);}
+ @PreAuthorize("hasRole('AUTHORITY')") @GetMapping("/v1/acr/{id}/audit") public List<Map<String,Object>> audit(@PathVariable long id){return svc.audit(id);}
  @GetMapping("/v1/notifications") public List<Map<String,Object>> notifications(){return svc.notifications();}
  @GetMapping("/v1/notifications/unread-count") public Map<String,Integer> unread(){return Map.of("count",svc.unread());}
  @PatchMapping("/v1/notifications/{id}/read") public ResponseEntity<?> read(@PathVariable long id){svc.read(id);return ResponseEntity.noContent().build();}
