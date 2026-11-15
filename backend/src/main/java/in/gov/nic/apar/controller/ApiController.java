@@ -26,8 +26,8 @@ import in.gov.nic.apar.service.AparService; import in.gov.nic.apar.security.JwtS
  @PreAuthorize("hasRole('AUTHORITY')") @PutMapping("/v1/acr/{id}/request-resubmission") public ResponseEntity<?> resubmit(@PathVariable long id,@RequestBody Map<String,String>b){svc.returnForRevision(id,b.getOrDefault("reason",""));return ResponseEntity.noContent().build();}
  @GetMapping("/v1/acr/{id}/history") public List<Map<String,Object>> history(@PathVariable long id){return svc.history(id);}
  @PreAuthorize("hasRole('AUTHORITY')") @GetMapping("/v1/acr/{id}/audit") public List<Map<String,Object>> audit(@PathVariable long id){return svc.audit(id);}
- @PreAuthorize("hasRole('EMPLOYEE')") @GetMapping("/v1/notifications") public List<Map<String,Object>> notifications(){return svc.notifications();}
- @PreAuthorize("hasRole('EMPLOYEE')") @GetMapping("/v1/notifications/unread-count") public Map<String,Integer> unread(){return Map.of("count",svc.unread());}
+ @GetMapping("/v1/notifications") public List<Map<String,Object>> notifications(){return svc.notifications();}
+ @GetMapping("/v1/notifications/unread-count") public Map<String,Integer> unread(){return Map.of("count",svc.unread());}
  @PreAuthorize("hasRole('EMPLOYEE')") @PatchMapping("/v1/notifications/{id}/read") public ResponseEntity<?> read(@PathVariable long id){svc.read(id);return ResponseEntity.noContent().build();}
  @PreAuthorize("hasRole('EMPLOYEE')") @PatchMapping("/v1/notifications/read-all") public ResponseEntity<?> readAll(){svc.readAll();return ResponseEntity.noContent().build();}
  @PreAuthorize("hasRole('AUTHORITY')") @PostMapping("/v1/notifications/send") public ResponseEntity<?> send(@RequestBody Map<String,Object>b){svc.sendNotification(b);return ResponseEntity.noContent().build();}
