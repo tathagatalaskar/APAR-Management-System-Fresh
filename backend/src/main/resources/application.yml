@@ -1,12 +1,20 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
   servlet:
     context-path: /api
+  forward-headers-strategy: framework
+
 spring:
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/apar}
     username: ${SPRING_DATASOURCE_USERNAME:apar}
     password: ${SPRING_DATASOURCE_PASSWORD:apar}
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/init/01_schema.sql
+      data-locations: classpath:db/init/02_reference_data.sql
+      continue-on-error: false
   jpa:
     hibernate:
       ddl-auto: validate
@@ -18,10 +26,12 @@ spring:
     open-in-view: false
   jackson:
     default-property-inclusion: non_null
+
 app:
-  jwt-secret: ${APP_JWT_SECRET:local-only-demo-secret-change-before-deploy-12345678901234567890}
+  jwt-secret: ${APP_JWT_SECRET}
   cors-origins: ${APP_CORS_ORIGINS:http://localhost:5173}
   bootstrap-enabled: ${APP_BOOTSTRAP_ENABLED:true}
+
 apar:
   demo-seed: ${APAR_LOAD_DEMO_SEED:false}
   reminders-enabled: ${APAR_REMINDERS_ENABLED:false}
