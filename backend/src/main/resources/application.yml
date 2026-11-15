@@ -5,6 +5,8 @@ server:
   forward-headers-strategy: framework
 
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/apar}
     username: ${SPRING_DATASOURCE_USERNAME:apar}
