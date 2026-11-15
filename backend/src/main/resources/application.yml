@@ -1,0 +1,27 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/apar}
+    username: ${SPRING_DATASOURCE_USERNAME:apar}
+    password: ${SPRING_DATASOURCE_PASSWORD:apar}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: tran
+        jdbc:
+          time_zone: UTC
+    open-in-view: false
+  jackson:
+    default-property-inclusion: non_null
+app:
+  jwt-secret: ${APP_JWT_SECRET:local-only-demo-secret-change-before-deploy-12345678901234567890}
+  cors-origins: ${APP_CORS_ORIGINS:http://localhost:5173}
+  bootstrap-enabled: ${APP_BOOTSTRAP_ENABLED:true}
+apar:
+  demo-seed: ${APAR_LOAD_DEMO_SEED:false}
+  reminders-enabled: ${APAR_REMINDERS_ENABLED:false}
