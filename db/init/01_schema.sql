@@ -14,8 +14,3 @@ CREATE TABLE IF NOT EXISTS acr_submission_history (id BIGSERIAL PRIMARY KEY, acr
 CREATE INDEX IF NOT EXISTS idx_employee_dept ON employee_details(department_id);
 CREATE INDEX IF NOT EXISTS idx_acr_status_year ON employee_acr_status(assessment_year,status);
 CREATE INDEX IF NOT EXISTS idx_notification_recipient ON notification(recipient_employee_id,read,created_at DESC);
-CREATE OR REPLACE FUNCTION tran.reject_immutable_change() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'Audit and submission history rows are immutable'; END $$;
-DROP TRIGGER IF EXISTS acr_audit_immutable ON acr_audit;
-CREATE TRIGGER acr_audit_immutable BEFORE UPDATE OR DELETE ON acr_audit FOR EACH ROW EXECUTE FUNCTION tran.reject_immutable_change();
-DROP TRIGGER IF EXISTS acr_history_immutable ON acr_submission_history;
-CREATE TRIGGER acr_history_immutable BEFORE UPDATE OR DELETE ON acr_submission_history FOR EACH ROW EXECUTE FUNCTION tran.reject_immutable_change();
